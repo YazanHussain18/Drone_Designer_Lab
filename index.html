@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#4f2db7">
-<title>Drone Designer Lab v2 | أنواع الدرون</title>
+<title>Drone Designer Lab v3 | Star Compatibility</title>
 <style>
 :root{
   --purple:#4f2db7;--purple-dark:#37208d;--purple-2:#6d51c9;--soft:#f1edfb;
@@ -257,7 +257,7 @@ button:disabled{cursor:not-allowed;opacity:.45}
 <header class="topbar">
   <div class="brand">
     <img id="logo" alt="أكاديمية طويق">
-    <div class="brandText"><span>صيف طويق للدرونز</span><strong>Drone Designer Lab <em class="versionTag">v2</em></strong></div>
+    <div class="brandText"><span>صيف طويق للدرونز</span><strong>Drone Designer Lab <em class="versionTag">v3</em></strong></div>
   </div>
   <div class="topActions">
     <button id="soundBtn" class="ghost">🔊</button>
@@ -321,7 +321,7 @@ button:disabled{cursor:not-allowed;opacity:.45}
   <div class="labTop">
     <div id="missionChip" class="miniChip">🎯 المهمة</div>
     <div id="progress" class="progress"></div>
-    <div id="scoreChip" class="miniChip">⭐ التوافق <b>0%</b></div>
+    <div class="miniChip">🛠️ صمّم أولاً</div>
   </div>
 
   <div class="labGrid">
@@ -352,12 +352,11 @@ button:disabled{cursor:not-allowed;opacity:.45}
     </section>
 
     <aside class="statsPanel card">
-      <div class="scoreHero">
-        <div class="scoreLabel">MISSION COMPATIBILITY</div>
-        <div class="scoreRow"><strong id="scoreValue">0%</strong><span id="scoreState">ابدأ التصميم</span></div>
-        <div class="scoreBar"><i id="scoreFill"></i></div>
+      <div class="scoreHero" style="background:linear-gradient(145deg,#4f2db7,#392582)">
+        <div class="scoreLabel">DESIGN STATUS</div>
+        <div class="scoreRow"><strong style="font-size:28px">BUILD</strong><span>اختر المكونات</span></div>
+        <div class="scoreBar"><i style="width:100%;background:rgba(91,222,210,.7)"></i></div>
       </div>
-
       <div id="statBars" class="statBars"></div>
 
       <div class="estimates">
@@ -432,7 +431,7 @@ button:disabled{cursor:not-allowed;opacity:.45}
         <p id="resultSubtitle">مصمم لمهمة الإنقاذ</p>
         <div id="medals" class="medals" style="margin-top:13px"></div>
       </div>
-      <div id="gradeRing" class="gradeRing"><div><strong id="finalScore">0%</strong><span>MISSION FIT</span></div></div>
+      <div id="gradeRing" class="gradeRing"><div><strong id="finalStars" style="font-size:30px">☆☆☆☆☆</strong><span>MISSION FIT</span></div></div>
     </div>
 
     <div class="resultBody">
@@ -668,6 +667,14 @@ const STAT_KEYS=['speed','stability','endurance','payload','sensing','safety'];
 const STAT_AR={speed:'السرعة',stability:'الثبات',endurance:'الطاقة',payload:'الحمولة',sensing:'الحساسات',safety:'السلامة'};
 
 function clamp(v,a=0,b=100){return Math.max(a,Math.min(b,v))}
+function scoreToStars(score){
+  if(score>=90)return 5;
+  if(score>=78)return 4;
+  if(score>=65)return 3;
+  if(score>=50)return 2;
+  return 1;
+}
+function starString(n){return '★'.repeat(n)+'☆'.repeat(5-n)}
 function getOpt(cat,id){return OPTIONS[cat].find(o=>o.id===id)}
 function allChosen(){return CATEGORIES.every(c=>selected[c.id])}
 function chosenCount(){return CATEGORIES.filter(c=>selected[c.id]).length}
@@ -824,9 +831,9 @@ function autoAdvanceCategory(){
 function updateLab(){
   const r=calculate(),count=chosenCount();
   $('#partCount').textContent=`${count} / ${CATEGORIES.length}`;
-  $('#scoreValue').textContent=`${r.score}%`;$('#scoreChip').innerHTML=`⭐ التوافق <b>${r.score}%</b>`;
-  $('#scoreFill').style.width=r.score+'%';
-  $('#scoreState').textContent=r.score>=85?'جاهز للمهمة':r.score>=70?'تصميم جيد':r.score>=55?'يحتاج تحسين':'غير مناسب بعد';
+  
+  
+  
   $('#flightTime').textContent=`${r.flightTime} min`;$('#weightValue').textContent=r.weight<8?'خفيف':r.weight<13?'متوسط':'ثقيل';
   $('#weightBadge').textContent=`Weight ${r.weight}`; $('#typeRibbon').textContent=typeLabel();
   const motor=selected.motors?getOpt('motors',selected.motors):null;$('#motorBadge').textContent=motor?`${motor.count} Motors`:'Motors ?';
@@ -1157,9 +1164,9 @@ function runTest(){
   $('#testEnergy').textContent=r.flightTime>=18?'ممتاز':r.flightTime>=12?'جيد':'قصير';
   $('#testMission').textContent=r.score>=80?'ناجح':r.score>=65?'قريب':'غير جاهز';
   const result=$('#testResult');
-  if(r.score>=80&&!r.warnings.length){result.style.background='var(--green-soft)';result.style.color='#247445';result.textContent=`✓ نجح الاختبار! توافق ${r.score}%. التصميم جاهز للهوية النهائية.`;testPassed=true;beep(true)}
-  else if(r.score>=65){result.style.background='var(--yellow-soft)';result.style.color='#8b6000';result.textContent=`△ نجح جزئياً. توافق ${r.score}%. تستطيع المتابعة أو تحسين التصميم للحصول على نتيجة أفضل.`;testPassed=true;beep(true)}
-  else{result.style.background='var(--red-soft)';result.style.color='#a43b41';result.textContent=`✕ الاختبار كشف مشكلة. التوافق ${r.score}%. غيّر بعض المكونات ثم اختبر مرة أخرى.`;testPassed=false;beep(false)}
+  if(r.score>=80&&!r.warnings.length){result.style.background='var(--green-soft)';result.style.color='#247445';result.textContent='✓ نجح الاختبار! التصميم مناسب للمهمة ويمكنك الانتقال للتخصيص.';testPassed=true;beep(true)}
+  else if(r.score>=65){result.style.background='var(--yellow-soft)';result.style.color='#8b6000';result.textContent='△ نجح جزئياً. يمكنك المتابعة أو تحسين التصميم للحصول على نتيجة أفضل.';testPassed=true;beep(true)}
+  else{result.style.background='var(--red-soft)';result.style.color='#a43b41';result.textContent='✕ الاختبار كشف مشكلة. غيّر بعض المكونات ثم اختبر مرة أخرى.';testPassed=false;beep(false)}
   $('#testContinue').textContent=testPassed?'تخصيص الدرون ←':'العودة للتعديل';
   $('#testModal').classList.add('show');setProgress(2)
 }
@@ -1168,9 +1175,15 @@ function runTest(){
 function renderResult(){
   const r=calculate(),m=MISSIONS[missionId],name=($('#droneName').value||'UNNAMED DRONE').trim()||'UNNAMED DRONE';
   $('#resultName').textContent=name;$('#resultSubtitle').textContent=`مصمم لمهمة ${m.name}`;
-  $('#finalScore').textContent=r.score+'%';
-  $('#gradeRing').style.background=`conic-gradient(var(--teal) ${r.score*3.6}deg,#ffffff22 ${r.score*3.6}deg)`;
-  $('#finalEvaluation').textContent=r.score>=85?`تصميم قوي جداً لمهمة ${m.name}. القرارات الهندسية متوازنة وتخدم متطلبات المهمة.`:r.score>=70?`التصميم قادر على تنفيذ المهمة، لكن توجد فرصة لتحسين بعض الخصائص.`:`التصميم قابل للتجربة، لكنه يحتاج تعديلات قبل اعتباره خياراً جيداً للمهمة.`;
+  const starCount=scoreToStars(r.score);$('#finalStars').textContent=starString(starCount);
+  $('#gradeRing').style.background=`conic-gradient(var(--teal) ${scoreToStars(r.score)*72}deg,#ffffff22 ${scoreToStars(r.score)*72}deg)`;
+  const stars=scoreToStars(r.score);
+  $('#finalEvaluation').textContent=
+    stars===5?`تصميم ممتاز لمهمة ${m.name}. اختياراتك مناسبة جداً للمهمة.`:
+    stars===4?`تصميم قوي لمهمة ${m.name}. توجد تحسينات بسيطة ممكنة.`:
+    stars===3?`تصميم جيد ويمكنه تنفيذ المهمة، لكن بعض الاختيارات يمكن تحسينها.`:
+    stars===2?`التصميم قابل للتجربة، لكنه يحتاج تعديلات واضحة ليصبح أنسب للمهمة.`:
+    `التصميم يحتاج إعادة تفكير في بعض المكونات الأساسية قبل تنفيذ المهمة.`;
   const specs=[
     ['نوع الدرون',getOpt('airframeType',selected.airframeType).name],
     ['الهيكل',getOpt('frame',selected.frame).name],
@@ -1180,7 +1193,7 @@ function renderResult(){
     ['الحساس',getOpt('sensor',selected.sensor).name],
     ['معدات المهمة',getOpt('module',selected.module).name],
     ['مدة الطيران',r.flightTime+' min'],
-    ['التوافق',r.score+'%']
+    ['توافق المهمة',starString(scoreToStars(r.score))]
   ];
   $('#specGrid').innerHTML=specs.map(([a,b])=>`<div class="spec"><span>${a}</span><strong>${b}</strong></div>`).join('');
   const adv=makeAdvice(r);$('#finalAdvice').textContent=adv.join(' ');
