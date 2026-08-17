@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#4f2db7">
-<title>Drone Designer Lab | مختبر تصميم الدرون</title>
+<title>Drone Designer Lab v2 | أنواع الدرون</title>
 <style>
 :root{
   --purple:#4f2db7;--purple-dark:#37208d;--purple-2:#6d51c9;--soft:#f1edfb;
@@ -233,13 +233,31 @@ button:disabled{cursor:not-allowed;opacity:.45}
   .stepDot span{display:none}.optionList{max-height:none}.testMeters{grid-template-columns:1fr 1fr}
   .resultTop{grid-template-columns:1fr;text-align:center}.gradeRing{margin:auto}
 }
+
+.versionTag{
+  display:inline-flex;vertical-align:middle;margin-inline-start:7px;padding:3px 7px;
+  border-radius:999px;background:var(--teal);color:var(--purple-dark);
+  font-size:9px;font-style:normal;letter-spacing:.04em
+}
+.typeRibbon{
+  position:absolute;top:14px;left:14px;z-index:3;padding:7px 10px;border-radius:999px;
+  background:rgba(255,255,255,.93);border:1px solid var(--border);color:var(--purple);
+  font-size:10px;font-weight:900;box-shadow:0 7px 18px rgba(65,37,139,.08)
+}
+.typeInfo{
+  margin:0 0 12px;padding:11px 12px;border-radius:14px;
+  background:linear-gradient(135deg,var(--soft),#fbfaff);border:1px solid #ddd2f4;
+  font-size:10px;line-height:1.7;color:#65636d
+}
+.typeInfo strong{color:var(--purple)}
+
 </style>
 </head>
 <body>
 <header class="topbar">
   <div class="brand">
     <img id="logo" alt="أكاديمية طويق">
-    <div class="brandText"><span>صيف طويق للدرونز</span><strong>Drone Designer Lab</strong></div>
+    <div class="brandText"><span>صيف طويق للدرونز</span><strong>Drone Designer Lab <em class="versionTag">v2</em></strong></div>
   </div>
   <div class="topActions">
     <button id="soundBtn" class="ghost">🔊</button>
@@ -255,13 +273,13 @@ button:disabled{cursor:not-allowed;opacity:.45}
       <span class="tag">مختبر تصميم الدرون</span>
       <h1>مهمتك تحدد<br>شكل درونك.</h1>
       <p>
-        اختر المهمة، ثم صمّم الدرون قطعةً قطعة. كل قرار سيغيّر السرعة والثبات ومدة الطيران والحمولة.
+        اختر المهمة، ثم اختر نوع الدرون المناسب قبل تصميمه قطعةً قطعة. كل قرار سيغيّر السرعة والثبات ومدة الطيران والحمولة.
         في النهاية سنختبر: <strong>هل درونك مناسب للمهمة فعلاً؟</strong>
       </p>
 
       <div class="gameFlow">
         <div><b>1</b><span>اختر المهمة</span></div><i>←</i>
-        <div><b>2</b><span>اختر القطع</span></div><i>←</i>
+        <div><b>2</b><span>اختر النوع والقطع</span></div><i>←</i>
         <div><b>3</b><span>اختبر</span></div><i>←</i>
         <div><b>4</b><span>لوّن وسمِّ</span></div><i>←</i>
         <div><b>5</b><span>اعتماد التصميم</span></div>
@@ -323,6 +341,7 @@ button:disabled{cursor:not-allowed;opacity:.45}
         <div class="modelBadges"><span id="motorBadge">4 Motors</span><span id="weightBadge">Weight 0</span></div>
       </div>
       <div class="canvasWrap">
+        <div id="typeRibbon" class="typeRibbon">🚁 Multirotor</div>
         <canvas id="droneCanvas" width="760" height="590"></canvas>
         <div class="rotateHint">حرّك الماوس فوق النموذج لتغيير زاوية العرض</div>
       </div>
@@ -483,41 +502,55 @@ const MISSIONS={
     icon:'🏁',name:'سباق',desc:'درون سريع وخفيف يغيّر الاتجاه بسرعة ويكمل المسار قبل المنافسين.',
     needs:['السرعة','الوزن الخفيف','التحكم'],
     weights:{speed:.34,stability:.18,endurance:.14,payload:.04,sensing:.08,safety:.22},
-    required:[],bonus:['racing','small','speed','light'],test:'اختبار لفة سريعة بين البوابات.'
+    required:[],bonus:['multirotor','racing','small','speed','light'],
+    preferredTypes:['multirotor'],test:'اختبار لفة سريعة بين البوابات.'
   },
   photo:{
     icon:'📷',name:'تصوير جوي',desc:'درون ثابت يحمل كاميرا جيدة ويبقى في الجو وقتاً كافياً للحصول على لقطات واضحة.',
     needs:['الثبات','الكاميرا','مدة الطيران'],
     weights:{speed:.06,stability:.29,endurance:.22,payload:.07,sensing:.25,safety:.11},
-    required:['gimbal'],bonus:['hframe','standard','smartgps'],test:'اختبار تصوير هدف ثابت بدون اهتزاز.'
+    required:['gimbal'],bonus:['multirotor','vtol','hframe','standard','smartgps'],
+    preferredTypes:['multirotor','vtol'],test:'اختبار تصوير هدف ثابت بدون اهتزاز.'
   },
   delivery:{
     icon:'📦',name:'توصيل',desc:'يحمل طرداً بأمان من نقطة إلى أخرى مع ثبات ومدة طيران جيدة.',
     needs:['الحمولة','الثبات','الطاقة'],
     weights:{speed:.10,stability:.23,endurance:.22,payload:.30,sensing:.05,safety:.10},
-    required:['cargo'],bonus:['heavy','torque','large','six'],test:'اختبار حمل طرد والوصول بهبوط آمن.'
+    required:['cargo'],bonus:['vtol','helicopter','heavy','torque','large','six','landing'],
+    preferredTypes:['vtol','helicopter','multirotor'],test:'اختبار حمل طرد والوصول بهبوط آمن.'
   },
   rescue:{
     icon:'🚑',name:'إنقاذ وبحث',desc:'يبحث عن شخص مفقود ويحتاج حساسات جيدة ووقت طيران وثبات وسلامة عالية.',
     needs:['الحساسات','مدة الطيران','السلامة'],
     weights:{speed:.10,stability:.20,endurance:.22,payload:.10,sensing:.25,safety:.13},
-    required:['thermal'],bonus:['smartgps','six','landing'],test:'اختبار العثور على هدف مفقود ثم العودة بأمان.'
+    required:['thermal'],bonus:['vtol','helicopter','multirotor','smartgps','six','landing'],
+    preferredTypes:['vtol','helicopter','multirotor'],test:'اختبار العثور على هدف مفقود ثم العودة بأمان.'
   },
   agriculture:{
     icon:'🌱',name:'زراعة',desc:'يغطي مساحة كبيرة ويحمل مستشعرات أو بخاخاً مع طيران ثابت وطويل.',
     needs:['مدة الطيران','الحمولة','المستشعرات'],
     weights:{speed:.05,stability:.19,endurance:.24,payload:.25,sensing:.20,safety:.07},
-    required:['sprayer'],bonus:['longframe','large','torque','multi'],test:'اختبار مسح حقل وحمل معدات زراعية.'
+    required:['sprayer'],bonus:['fixedwing','vtol','longframe','large','torque','multi'],
+    preferredTypes:['fixedwing','vtol','multirotor'],test:'اختبار مسح حقل وحمل معدات زراعية.'
   },
   inspection:{
     icon:'🔍',name:'فحص المنشآت',desc:'يقترب من الأجسام ويحتاج ثباتاً وحساسات دقيقة وسلامة جيدة.',
     needs:['الدقة','الثبات','الحساسات'],
     weights:{speed:.05,stability:.29,endurance:.15,payload:.06,sensing:.30,safety:.15},
-    required:['gimbal'],bonus:['smartgps','guards','hframe'],test:'اختبار فحص برج عن قرب وتجنب الاصطدام.'
+    required:['gimbal'],bonus:['multirotor','helicopter','vtol','smartgps','guards','hframe'],
+    preferredTypes:['multirotor','helicopter','vtol'],test:'اختبار فحص برج عن قرب وتجنب الاصطدام.'
+  },
+  mapping:{
+    icon:'🗺️',name:'مسح ورسم خرائط',desc:'يغطي منطقة كبيرة بكفاءة ويجمع صوراً وبيانات من مسار طويل.',
+    needs:['مدى طويل','الحساسات','الكفاءة'],
+    weights:{speed:.12,stability:.15,endurance:.34,payload:.05,sensing:.26,safety:.08},
+    required:['actioncam'],bonus:['fixedwing','vtol','surveywing','longbattery','smartgps'],
+    preferredTypes:['fixedwing','vtol'],test:'اختبار تغطية منطقة واسعة بأقل استهلاك للطاقة.'
   }
 };
 
 const CATEGORIES=[
+  {id:'airframeType',label:'نوع الدرون',icon:'✈️'},
   {id:'frame',label:'الهيكل',icon:'🔷'},
   {id:'motors',label:'عدد المحركات',icon:'⚙️'},
   {id:'motorType',label:'نوع المحرك',icon:'⚡'},
@@ -530,18 +563,45 @@ const CATEGORIES=[
 ];
 
 const OPTIONS={
+ airframeType:[
+  {id:'multirotor',name:'Multirotor',icon:'🚁',desc:'عدة مراوح للثبات والتحكم الدقيق والهبوط العمودي.',cost:2,stats:{speed:8,stability:15,endurance:-3,payload:5,sensing:4,safety:5}},
+  {id:'fixedwing',name:'Fixed Wing',icon:'✈️',desc:'جناح ثابت للطيران الطويل وتغطية مساحات كبيرة بكفاءة.',cost:3,stats:{speed:13,stability:7,endurance:25,payload:2,sensing:4,safety:-2}},
+  {id:'vtol',name:'VTOL Hybrid',icon:'🛫',desc:'يجمع بين الإقلاع العمودي وكفاءة الطيران الأمامي.',cost:5,stats:{speed:10,stability:12,endurance:15,payload:8,sensing:5,safety:6}},
+  {id:'helicopter',name:'Single-Rotor Helicopter',icon:'🚁',desc:'مروحة رئيسية كبيرة للرفع والحمولة مع قدرة على التحويم.',cost:5,stats:{speed:7,stability:9,endurance:7,payload:18,sensing:3,safety:-1}}
+ ],
  frame:[
-  {id:'micro',name:'Micro X',icon:'✦',desc:'صغير وخفيف جداً.',cost:1,stats:{speed:20,stability:2,endurance:5,payload:-18,sensing:0,safety:-5},size:.78,maxMotors:4,maxProp:3},
-  {id:'racing',name:'Racing X',icon:'🏁',desc:'مصمم للسرعة والحركة السريعة.',cost:2,stats:{speed:25,stability:4,endurance:2,payload:-8,sensing:0,safety:-3},size:.9,maxMotors:4,maxProp:5},
-  {id:'balanced',name:'Balanced X',icon:'⚖️',desc:'اختيار متوازن لمعظم المهمات.',cost:3,stats:{speed:10,stability:13,endurance:8,payload:5,sensing:0,safety:4},size:1,maxMotors:6,maxProp:7},
-  {id:'hframe',name:'Cinematic H',icon:'🎥',desc:'مساحة أكبر للكاميرا وثبات جيد.',cost:4,stats:{speed:2,stability:23,endurance:7,payload:7,sensing:8,safety:5},size:1.08,maxMotors:6,maxProp:7},
-  {id:'heavy',name:'Heavy Lift',icon:'📦',desc:'هيكل قوي للحمولات الكبيرة.',cost:6,stats:{speed:-10,stability:18,endurance:4,payload:32,sensing:0,safety:8},size:1.18,maxMotors:8,maxProp:9},
-  {id:'longframe',name:'Long Endurance',icon:'🛫',desc:'مهيأ للطيران الطويل والكفاءة.',cost:4,stats:{speed:0,stability:12,endurance:24,payload:8,sensing:0,safety:4},size:1.12,maxMotors:6,maxProp:9}
+  {id:'micro',name:'Micro X',icon:'✦',desc:'صغير وخفيف جداً.',types:['multirotor'],cost:1,stats:{speed:20,stability:2,endurance:5,payload:-18,sensing:0,safety:-5},size:.78,maxMotors:4,maxProp:3},
+  {id:'racing',name:'Racing X',icon:'🏁',desc:'مصمم للسرعة والحركة السريعة.',types:['multirotor'],cost:2,stats:{speed:25,stability:4,endurance:2,payload:-8,sensing:0,safety:-3},size:.9,maxMotors:4,maxProp:5},
+  {id:'balanced',name:'Balanced X',icon:'⚖️',desc:'اختيار متوازن لمعظم المهمات.',types:['multirotor'],cost:3,stats:{speed:10,stability:13,endurance:8,payload:5,sensing:0,safety:4},size:1,maxMotors:6,maxProp:7},
+  {id:'hframe',name:'Cinematic H',icon:'🎥',desc:'مساحة أكبر للكاميرا وثبات جيد.',types:['multirotor'],cost:4,stats:{speed:2,stability:23,endurance:7,payload:7,sensing:8,safety:5},size:1.08,maxMotors:6,maxProp:7},
+  {id:'heavy',name:'Heavy Lift',icon:'📦',desc:'هيكل قوي للحمولات الكبيرة.',types:['multirotor'],cost:6,stats:{speed:-10,stability:18,endurance:4,payload:32,sensing:0,safety:8},size:1.18,maxMotors:8,maxProp:9},
+  {id:'longframe',name:'Long Endurance X',icon:'🛫',desc:'مهيأ للطيران الأطول والكفاءة.',types:['multirotor'],cost:4,stats:{speed:0,stability:12,endurance:24,payload:8,sensing:0,safety:4},size:1.12,maxMotors:6,maxProp:9},
+
+  {id:'sportwing',name:'Sport Wing',icon:'✈️',desc:'جناح صغير وسريع للمسافات المفتوحة.',types:['fixedwing'],cost:2,stats:{speed:24,stability:7,endurance:14,payload:-5,sensing:0,safety:-2},size:.95,maxMotors:2,maxProp:10},
+  {id:'surveywing',name:'Survey Wing',icon:'🗺️',desc:'جناح طويل الكفاءة للمسح والخرائط.',types:['fixedwing'],cost:4,stats:{speed:7,stability:15,endurance:32,payload:4,sensing:8,safety:3},size:1.12,maxMotors:2,maxProp:12},
+  {id:'cargowing',name:'Cargo Wing',icon:'📦',desc:'مساحة داخلية أكبر للحمولة.',types:['fixedwing'],cost:5,stats:{speed:0,stability:13,endurance:21,payload:22,sensing:0,safety:4},size:1.18,maxMotors:2,maxProp:12},
+
+  {id:'quadplane',name:'Quadplane',icon:'🛫',desc:'جناح مع مراوح رفع عمودي ومحرك أمامي.',types:['vtol'],cost:5,stats:{speed:8,stability:15,endurance:19,payload:9,sensing:5,safety:6},size:1.08,maxMotors:5,maxProp:9},
+  {id:'tiltwing',name:'Tilt-Rotor VTOL',icon:'↕️',desc:'مراوح تميل بين الرفع والطيران الأمامي.',types:['vtol'],cost:6,stats:{speed:15,stability:11,endurance:16,payload:8,sensing:3,safety:4},size:1.05,maxMotors:4,maxProp:9},
+  {id:'vtolsurvey',name:'VTOL Survey',icon:'🗺️',desc:'مصمم للمسح مع إقلاع عمودي.',types:['vtol'],cost:6,stats:{speed:6,stability:17,endurance:27,payload:5,sensing:10,safety:7},size:1.13,maxMotors:5,maxProp:10},
+
+  {id:'sportheli',name:'Sport Helicopter',icon:'🚁',desc:'خفيف وسريع الاستجابة.',types:['helicopter'],cost:3,stats:{speed:18,stability:5,endurance:5,payload:2,sensing:0,safety:-3},size:.95,maxMotors:2,maxProp:14},
+  {id:'utilityheli',name:'Utility Helicopter',icon:'🧰',desc:'متوازن للمراقبة والبحث والحمولة المتوسطة.',types:['helicopter'],cost:5,stats:{speed:5,stability:15,endurance:12,payload:20,sensing:6,safety:5},size:1.08,maxMotors:2,maxProp:16},
+  {id:'liftheli',name:'Heavy-Lift Helicopter',icon:'📦',desc:'رفع عالٍ للحمولات الثقيلة.',types:['helicopter'],cost:7,stats:{speed:-5,stability:16,endurance:5,payload:35,sensing:0,safety:5},size:1.18,maxMotors:2,maxProp:18}
  ],
  motors:[
-  {id:'four',name:'4 محركات — Quadcopter',icon:'4',desc:'خفيف وكفؤ ومناسب لمعظم الدرونز.',cost:2,count:4,stats:{speed:14,stability:6,endurance:13,payload:0,sensing:0,safety:2}},
-  {id:'six',name:'6 محركات — Hexacopter',icon:'6',desc:'ثبات وحمولة أكبر مع وزن إضافي.',cost:4,count:6,stats:{speed:4,stability:18,endurance:-3,payload:17,sensing:0,safety:9}},
-  {id:'eight',name:'8 محركات — Octocopter',icon:'8',desc:'حمولة وثبات عالٍ لكن ثقيل.',cost:7,count:8,stats:{speed:-4,stability:25,endurance:-12,payload:30,sensing:0,safety:13}}
+  {id:'four',name:'4 محركات — Quadcopter',icon:'4',desc:'خفيف وكفؤ ومناسب لمعظم الدرونز.',types:['multirotor'],cost:2,count:4,stats:{speed:14,stability:6,endurance:13,payload:0,sensing:0,safety:2}},
+  {id:'six',name:'6 محركات — Hexacopter',icon:'6',desc:'ثبات وحمولة أكبر مع وزن إضافي.',types:['multirotor'],cost:4,count:6,stats:{speed:4,stability:18,endurance:-3,payload:17,sensing:0,safety:9}},
+  {id:'eight',name:'8 محركات — Octocopter',icon:'8',desc:'حمولة وثبات عالٍ لكن ثقيل.',types:['multirotor'],cost:7,count:8,stats:{speed:-4,stability:25,endurance:-12,payload:30,sensing:0,safety:13}},
+
+  {id:'singleprop',name:'1 محرك دفع',icon:'1',desc:'محرك أمامي أو خلفي بسيط وكفؤ.',types:['fixedwing'],cost:2,count:1,stats:{speed:12,stability:1,endurance:14,payload:0,sensing:0,safety:0}},
+  {id:'twinprop',name:'2 محرك دفع',icon:'2',desc:'قوة أكبر ومرونة إضافية.',types:['fixedwing'],cost:4,count:2,stats:{speed:15,stability:5,endurance:5,payload:10,sensing:0,safety:3}},
+
+  {id:'vtol5',name:'5 محركات — Quadplane',icon:'5',desc:'4 للرفع + 1 للطيران الأمامي.',types:['vtol'],cost:5,count:5,stats:{speed:8,stability:16,endurance:7,payload:9,sensing:0,safety:7}},
+  {id:'tilt2',name:'2 Tilt Rotors',icon:'2',desc:'مروحتان تميلان بين الرفع والدفع.',types:['vtol'],cost:5,count:2,stats:{speed:17,stability:8,endurance:13,payload:4,sensing:0,safety:2}},
+  {id:'vtol4',name:'4 Tilt Rotors',icon:'4',desc:'تحكم وثبات أكبر مع تعقيد أعلى.',types:['vtol'],cost:7,count:4,stats:{speed:13,stability:18,endurance:5,payload:12,sensing:0,safety:7}},
+
+  {id:'heli2',name:'Main + Tail Rotor',icon:'2',desc:'المروحة الرئيسية للرفع ومروحة الذيل للتحكم.',types:['helicopter'],cost:4,count:2,stats:{speed:8,stability:11,endurance:7,payload:15,sensing:0,safety:1}}
  ],
  motorType:[
   {id:'speed',name:'Speed Motors',icon:'⚡',desc:'RPM أعلى للسرعة.',cost:2,stats:{speed:23,stability:-2,endurance:-12,payload:-5,sensing:0,safety:-2}},
@@ -549,10 +609,21 @@ const OPTIONS={
   {id:'torque',name:'High Torque Motors',icon:'💪',desc:'قوة رفع أكبر للحمولات.',cost:4,stats:{speed:-3,stability:10,endurance:-6,payload:24,sensing:0,safety:5}}
  ],
  props:[
-  {id:'small',name:'3" Propellers',icon:'➹',desc:'خفيفة وسريعة الاستجابة.',cost:1,size:3,stats:{speed:18,stability:-5,endurance:-4,payload:-10,sensing:0,safety:-2}},
-  {id:'medium',name:'5" Propellers',icon:'✣',desc:'متوازنة للسرعة والثبات.',cost:2,size:5,stats:{speed:10,stability:8,endurance:5,payload:5,sensing:0,safety:2}},
-  {id:'large',name:'7" Propellers',icon:'✥',desc:'رفع وكفاءة أفضل للطيران الطويل.',cost:3,size:7,stats:{speed:-5,stability:14,endurance:10,payload:18,sensing:0,safety:4}},
-  {id:'xlarge',name:'9" Propellers',icon:'✺',desc:'رفع كبير للدرون الثقيل.',cost:4,size:9,stats:{speed:-12,stability:15,endurance:7,payload:27,sensing:0,safety:3}}
+  {id:'small',name:'3" Propellers',icon:'➹',desc:'خفيفة وسريعة الاستجابة.',types:['multirotor'],cost:1,size:3,stats:{speed:18,stability:-5,endurance:-4,payload:-10,sensing:0,safety:-2}},
+  {id:'medium',name:'5" Propellers',icon:'✣',desc:'متوازنة للسرعة والثبات.',types:['multirotor'],cost:2,size:5,stats:{speed:10,stability:8,endurance:5,payload:5,sensing:0,safety:2}},
+  {id:'large',name:'7" Propellers',icon:'✥',desc:'رفع وكفاءة أفضل للطيران الطويل.',types:['multirotor'],cost:3,size:7,stats:{speed:-5,stability:14,endurance:10,payload:18,sensing:0,safety:4}},
+  {id:'xlarge',name:'9" Propellers',icon:'✺',desc:'رفع كبير للدرون الثقيل.',types:['multirotor'],cost:4,size:9,stats:{speed:-12,stability:15,endurance:7,payload:27,sensing:0,safety:3}},
+
+  {id:'wing6',name:'6" Cruise Prop',icon:'✦',desc:'استجابة أسرع للجناح الصغير.',types:['fixedwing'],cost:2,size:6,stats:{speed:17,stability:0,endurance:5,payload:-3,sensing:0,safety:0}},
+  {id:'wing10',name:'10" Efficiency Prop',icon:'✦',desc:'كفاءة ومدى أفضل.',types:['fixedwing'],cost:3,size:10,stats:{speed:5,stability:4,endurance:18,payload:8,sensing:0,safety:2}},
+  {id:'wing12',name:'12" High-Lift Prop',icon:'✦',desc:'قوة أكبر للحمولة.',types:['fixedwing'],cost:4,size:12,stats:{speed:-3,stability:5,endurance:10,payload:18,sensing:0,safety:2}},
+
+  {id:'vtol7',name:'7" VTOL Rotors',icon:'✣',desc:'موازنة بين الرفع والكفاءة.',types:['vtol'],cost:3,size:7,stats:{speed:2,stability:12,endurance:9,payload:10,sensing:0,safety:4}},
+  {id:'vtol9',name:'9" VTOL Rotors',icon:'✥',desc:'رفع أفضل للحمولات.',types:['vtol'],cost:4,size:9,stats:{speed:-4,stability:15,endurance:8,payload:19,sensing:0,safety:4}},
+
+  {id:'heli12',name:'12" Main Rotor',icon:'━',desc:'مروحة رئيسية سريعة وخفيفة.',types:['helicopter'],cost:3,size:12,stats:{speed:13,stability:4,endurance:4,payload:5,sensing:0,safety:-2}},
+  {id:'heli16',name:'16" Main Rotor',icon:'━',desc:'رفع وثبات أكبر.',types:['helicopter'],cost:4,size:16,stats:{speed:2,stability:15,endurance:8,payload:19,sensing:0,safety:2}},
+  {id:'heli18',name:'18" Heavy-Lift Rotor',icon:'━',desc:'رفع عالٍ للحمولات.',types:['helicopter'],cost:5,size:18,stats:{speed:-6,stability:16,endurance:4,payload:29,sensing:0,safety:1}}
  ],
  battery:[
   {id:'light',name:'Light Battery',icon:'🔋',desc:'خفيفة وقصيرة المدى.',cost:1,weight:1,stats:{speed:10,stability:0,endurance:12,payload:0,sensing:0,safety:0}},
@@ -580,15 +651,15 @@ const OPTIONS={
  ],
  safety:[
   {id:'noneSafety',name:'بدون إضافة',icon:'—',desc:'وزن أقل، حماية أقل.',cost:0,stats:{speed:3,stability:0,endurance:2,payload:0,sensing:0,safety:-12}},
-  {id:'guards',name:'Propeller Guards',icon:'⭕',desc:'تحمي المراوح قرب الأشخاص والأجسام.',cost:2,stats:{speed:-5,stability:2,endurance:-3,payload:-2,sensing:0,safety:22}},
+  {id:'guards',name:'Propeller Guards',icon:'⭕',desc:'تحمي المراوح قرب الأشخاص والأجسام.',types:['multirotor','vtol'],cost:2,stats:{speed:-5,stability:2,endurance:-3,payload:-2,sensing:0,safety:22}},
   {id:'landing',name:'Landing Gear',icon:'🛬',desc:'هبوط أكثر أماناً ويحمي المعدات.',cost:2,stats:{speed:-2,stability:3,endurance:-2,payload:-1,sensing:0,safety:15}},
   {id:'parachute',name:'Safety Parachute',icon:'🪂',desc:'أمان إضافي للدرون الكبير.',cost:4,stats:{speed:-6,stability:0,endurance:-5,payload:-3,sensing:0,safety:28}}
  ]
 };
 
 let missionId=null;
-let selected={frame:null,motors:null,motorType:null,props:null,battery:null,controller:null,sensor:null,module:null,safety:null};
-let currentCat='frame';
+let selected={airframeType:null,frame:null,motors:null,motorType:null,props:null,battery:null,controller:null,sensor:null,module:null,safety:null};
+let currentCat='airframeType';
 let testPassed=false;
 let bodyColor='#4f2db7',propColor='#222228',ledColor='#5bded2';
 let viewAngle=0.35,targetViewAngle=0.35;
@@ -614,9 +685,13 @@ function calculate(){
 
   // additional structural penalties/bonuses
   let warnings=[],compatBonus=0;
+  const type=selected.airframeType;
   const frame=selected.frame&&getOpt('frame',selected.frame);
   const motors=selected.motors&&getOpt('motors',selected.motors);
   const props=selected.props&&getOpt('props',selected.props);
+  if(type&&frame?.types&&!frame.types.includes(type)){warnings.push('الهيكل لا يناسب نوع الدرون المختار.');compatBonus-=18}
+  if(type&&motors?.types&&!motors.types.includes(type)){warnings.push('ترتيب المحركات لا يناسب نوع الدرون المختار.');compatBonus-=18}
+  if(type&&props?.types&&!props.types.includes(type)){warnings.push('نوع المراوح لا يناسب نوع الدرون المختار.');compatBonus-=15}
   if(frame&&motors&&motors.count>frame.maxMotors){
     warnings.push(`الهيكل ${frame.name} لا يناسب ${motors.count} محركات.`);
     stats.stability-=18;stats.safety-=18;compatBonus-=15;
@@ -651,6 +726,14 @@ function calculate(){
       else missionWarnings.push(`المهمة تحتاج ${findOptionName(req)}.`);
     }
     for(const bonus of m.bonus) if(Object.values(selected).includes(bonus)) compatBonus+=2.5;
+
+    if(selected.airframeType){
+      if(m.preferredTypes.includes(selected.airframeType)) compatBonus+=8;
+      else {
+        compatBonus-=5;
+        missionWarnings.push(`نوع الدرون ${findOptionName(selected.airframeType)} ليس الخيار الأقوى لهذه المهمة.`);
+      }
+    }
 
     // mission-specific pair bonuses
     if(missionId==='rescue'&&selected.module==='spotlight')compatBonus+=5;
@@ -705,13 +788,29 @@ function renderTabs(){
     b.onclick=()=>{currentCat=c.id;renderTabs();renderOptions()};w.appendChild(b)
   })
 }
+
+function getAvailableOptions(cat){
+  const type=selected.airframeType;
+  if(cat==='airframeType')return OPTIONS[cat];
+  return OPTIONS[cat].filter(o=>!o.types || !type || o.types.includes(type));
+}
+function typeLabel(){
+  const o=selected.airframeType&&getOpt('airframeType',selected.airframeType);
+  return o?`${o.icon} ${o.name}`:'✈️ اختر نوع الدرون';
+}
+
 function renderOptions(){
   const list=$('#optionList');list.innerHTML='';
-  OPTIONS[currentCat].forEach(o=>{
+  getAvailableOptions(currentCat).forEach(o=>{
     const card=document.createElement('button');card.className='optionCard'+(selected[currentCat]===o.id?' selected':'');card.type='button';
     const positives=STAT_KEYS.filter(k=>(o.stats?.[k]||0)>10).slice(0,2).map(k=>STAT_AR[k]).join(' + ');
     card.innerHTML=`<div class="optionIcon">${o.icon}</div><div><h4>${o.name}</h4><p>${o.desc}</p></div><div class="optionMeta"><b>${positives||'Balanced'}</b><small>Design pts ${o.cost||0}</small></div>`;
-    card.onclick=()=>{selected[currentCat]=o.id;testPassed=false;beep(true);renderOptions();updateLab();autoAdvanceCategory()};
+    card.onclick=()=>{
+      if(currentCat==='airframeType' && selected.airframeType!==o.id){
+        selected.frame=null;selected.motors=null;selected.props=null;selected.safety=null;
+      }
+      selected[currentCat]=o.id;testPassed=false;beep(true);renderOptions();updateLab();autoAdvanceCategory()
+    };
     list.appendChild(card)
   })
 }
@@ -729,7 +828,7 @@ function updateLab(){
   $('#scoreFill').style.width=r.score+'%';
   $('#scoreState').textContent=r.score>=85?'جاهز للمهمة':r.score>=70?'تصميم جيد':r.score>=55?'يحتاج تحسين':'غير مناسب بعد';
   $('#flightTime').textContent=`${r.flightTime} min`;$('#weightValue').textContent=r.weight<8?'خفيف':r.weight<13?'متوسط':'ثقيل';
-  $('#weightBadge').textContent=`Weight ${r.weight}`;
+  $('#weightBadge').textContent=`Weight ${r.weight}`; $('#typeRibbon').textContent=typeLabel();
   const motor=selected.motors?getOpt('motors',selected.motors):null;$('#motorBadge').textContent=motor?`${motor.count} Motors`:'Motors ?';
 
   const statBars=$('#statBars');statBars.innerHTML='';
@@ -753,6 +852,10 @@ function makeAdvice(r){
   const out=[];
   if(!missionId)return['اختر المهمة أولاً.'];
   const m=MISSIONS[missionId];
+  if(selected.airframeType && !m.preferredTypes.includes(selected.airframeType)){
+    const names=m.preferredTypes.map(findOptionName).join(' أو ');
+    out.push(`فكّر في ${names}؛ هذا النوع عادةً أنسب لمهمة ${m.name}.`);
+  }
   const ranked=Object.entries(m.weights).sort((a,b)=>b[1]-a[1]).slice(0,3);
   ranked.forEach(([k])=>{
     if(r.stats[k]<65)out.push(`ارفع ${STAT_AR[k]} لأن مهمة ${m.name} تعتمد عليه.`)
@@ -763,6 +866,7 @@ function makeAdvice(r){
 }
 function buildSummary(){
   const parts=[];
+  if(selected.airframeType)parts.push(getOpt('airframeType',selected.airframeType).name);
   if(selected.frame)parts.push(getOpt('frame',selected.frame).name);
   if(selected.motors)parts.push(getOpt('motors',selected.motors).count+' motors');
   if(selected.sensor)parts.push(getOpt('sensor',selected.sensor).name);
@@ -771,7 +875,110 @@ function buildSummary(){
 
 /* DRAWING ENGINE */
 function canvasContext(id){const c=document.getElementById(id);return[c,c.getContext('2d')]}
+
+function prepAltBackground(canvas,ctx){
+  const W=canvas.width,H=canvas.height;ctx.clearRect(0,0,W,H);
+  const grad=ctx.createRadialGradient(W*.5,H*.45,20,W*.5,H*.45,W*.55);
+  grad.addColorStop(0,'rgba(91,222,210,.14)');grad.addColorStop(1,'rgba(79,45,183,.02)');
+  ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+  ctx.save();ctx.translate(W/2,H*.57);ctx.scale(1,.3);ctx.strokeStyle='rgba(79,45,183,.09)';ctx.lineWidth=3;
+  for(const rr of [85,155,225]){ctx.beginPath();ctx.arc(0,0,rr,0,Math.PI*2);ctx.stroke()}ctx.restore();
+}
+function drawPayloadAndSensor(ctx,cx,cy,scale){
+  const sensor=selected.sensor?getOpt('sensor',selected.sensor):null;
+  const module=selected.module?getOpt('module',selected.module):null;
+  if(sensor&&sensor.id!=='noneSensor'){
+    ctx.fillStyle='#1a1a20';roundRect(ctx,cx-20*scale,cy+28*scale,40*scale,22*scale,7*scale);ctx.fill();
+    ctx.fillStyle=sensor.id==='thermal'?'#ff7d52':sensor.id==='multi'?'#9b6de0':'#5bded2';
+    ctx.beginPath();ctx.arc(cx,cy+39*scale,7*scale,0,Math.PI*2);ctx.fill();
+  }
+  if(module&&module.id!=='noneModule'){
+    const y=cy+56*scale;
+    if(module.id==='cargo'){ctx.fillStyle='#f0b23a';roundRect(ctx,cx-30*scale,y,60*scale,28*scale,7*scale);ctx.fill()}
+    if(module.id==='rescuekit'){ctx.fillStyle='#df565e';roundRect(ctx,cx-27*scale,y,54*scale,27*scale,7*scale);ctx.fill();ctx.fillStyle='#fff';ctx.fillRect(cx-4*scale,y+4*scale,8*scale,19*scale);ctx.fillRect(cx-10*scale,y+10*scale,20*scale,8*scale)}
+    if(module.id==='sprayer'){ctx.strokeStyle='#58b4e9';ctx.lineWidth=5*scale;ctx.beginPath();ctx.moveTo(cx-45*scale,y+12*scale);ctx.lineTo(cx+45*scale,y+12*scale);ctx.stroke();ctx.fillStyle='#58b4e9';ctx.beginPath();ctx.arc(cx,y+10*scale,14*scale,0,Math.PI*2);ctx.fill()}
+    if(module.id==='spotlight'){ctx.fillStyle='#ffe47a';ctx.beginPath();ctx.arc(cx,y+13*scale,12*scale,0,Math.PI*2);ctx.fill()}
+  }
+}
+function drawFixedWing(canvas,ctx,scale=1,angle=.35,showName=false){
+  prepAltBackground(canvas,ctx);
+  const W=canvas.width,H=canvas.height,cx=W/2,cy=H*.50;
+  const frame=selected.frame?getOpt('frame',selected.frame):{size:1};
+  const motors=selected.motors?getOpt('motors',selected.motors):{count:1};
+  const bodyL=260*frame.size*scale, wing=225*frame.size*scale;
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(angle*.08);
+  ctx.fillStyle=bodyColor;ctx.strokeStyle='rgba(0,0,0,.18)';ctx.lineWidth=2;
+  // wings
+  ctx.beginPath();ctx.moveTo(-38*scale,-5*scale);ctx.lineTo(-wing,42*scale);ctx.lineTo(-wing*.82,75*scale);ctx.lineTo(20*scale,30*scale);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.moveTo(-38*scale,-5*scale);ctx.lineTo(wing,42*scale);ctx.lineTo(wing*.82,75*scale);ctx.lineTo(20*scale,30*scale);ctx.closePath();ctx.fill();ctx.stroke();
+  // fuselage
+  const g=ctx.createLinearGradient(-bodyL/2,0,bodyL/2,0);g.addColorStop(0,darken(bodyColor,18));g.addColorStop(.6,bodyColor);g.addColorStop(1,lighten(bodyColor,20));
+  ctx.fillStyle=g;roundRect(ctx,-bodyL*.44,-24*scale,bodyL*.88,48*scale,22*scale);ctx.fill();
+  // tail
+  ctx.fillStyle=darken(bodyColor,8);ctx.beginPath();ctx.moveTo(-bodyL*.42,0);ctx.lineTo(-bodyL*.55,-48*scale);ctx.lineTo(-bodyL*.32,-18*scale);ctx.closePath();ctx.fill();
+  // motors / props
+  const propPositions=motors.count===2?[[-wing*.56,25*scale],[wing*.56,25*scale]]:[[bodyL*.43,0]];
+  propPositions.forEach(([x,y],i)=>{ctx.save();ctx.translate(x,y);ctx.rotate(rotorPhase*(i%2?1:-1));ctx.strokeStyle=propColor;ctx.lineWidth=5*scale;ctx.beginPath();ctx.moveTo(0,-33*scale);ctx.lineTo(0,33*scale);ctx.stroke();ctx.fillStyle='#222';ctx.beginPath();ctx.arc(0,0,7*scale,0,Math.PI*2);ctx.fill();ctx.restore()});
+  ctx.restore();
+  drawPayloadAndSensor(ctx,cx,cy,scale);
+  if(showName)drawNamePlate(ctx,cx,cy-95*scale,scale);
+}
+function drawVTOL(canvas,ctx,scale=1,angle=.35,showName=false){
+  prepAltBackground(canvas,ctx);
+  const W=canvas.width,H=canvas.height,cx=W/2,cy=H*.49;
+  const frame=selected.frame?getOpt('frame',selected.frame):{size:1};
+  const motors=selected.motors?getOpt('motors',selected.motors):{count:5};
+  const wing=205*frame.size*scale;
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(angle*.06);
+  ctx.fillStyle=bodyColor;ctx.strokeStyle='rgba(0,0,0,.18)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(-35*scale,0);ctx.lineTo(-wing,50*scale);ctx.lineTo(-wing*.84,78*scale);ctx.lineTo(25*scale,32*scale);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.moveTo(-35*scale,0);ctx.lineTo(wing,50*scale);ctx.lineTo(wing*.84,78*scale);ctx.lineTo(25*scale,32*scale);ctx.closePath();ctx.fill();ctx.stroke();
+  const g=ctx.createLinearGradient(-110*scale,0,120*scale,0);g.addColorStop(0,darken(bodyColor,18));g.addColorStop(.55,bodyColor);g.addColorStop(1,lighten(bodyColor,20));ctx.fillStyle=g;roundRect(ctx,-115*scale,-27*scale,230*scale,54*scale,23*scale);ctx.fill();
+  let pts=[];
+  if(motors.count===2)pts=[[-wing*.72,42*scale],[wing*.72,42*scale]];
+  else pts=[[-wing*.72,40*scale],[wing*.72,40*scale],[-wing*.35,28*scale],[wing*.35,28*scale]];
+  pts.forEach(([x,y],i)=>{ctx.save();ctx.translate(x,y);ctx.rotate(rotorPhase*(i%2?1:-1));ctx.strokeStyle=propColor;ctx.lineWidth=5*scale;ctx.beginPath();ctx.moveTo(-30*scale,0);ctx.lineTo(30*scale,0);ctx.stroke();ctx.fillStyle='#222';ctx.beginPath();ctx.arc(0,0,7*scale,0,Math.PI*2);ctx.fill();ctx.restore()});
+  if(motors.count===5){ctx.save();ctx.translate(117*scale,0);ctx.rotate(rotorPhase);ctx.strokeStyle=propColor;ctx.lineWidth=5*scale;ctx.beginPath();ctx.moveTo(0,-26*scale);ctx.lineTo(0,26*scale);ctx.stroke();ctx.restore()}
+  ctx.restore();
+  drawPayloadAndSensor(ctx,cx,cy,scale);
+  if(showName)drawNamePlate(ctx,cx,cy-95*scale,scale);
+}
+function drawHelicopter(canvas,ctx,scale=1,angle=.35,showName=false){
+  prepAltBackground(canvas,ctx);
+  const W=canvas.width,H=canvas.height,cx=W/2,cy=H*.51;
+  const frame=selected.frame?getOpt('frame',selected.frame):{size:1};
+  const props=selected.props?getOpt('props',selected.props):{size:16};
+  const s=frame.size*scale, rotorR=(100+props.size*6)*scale;
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(angle*.05);
+  // tail boom
+  ctx.strokeStyle='#2a2a30';ctx.lineWidth=15*s;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-35*s,0);ctx.lineTo(-190*s,-14*s);ctx.stroke();
+  // body
+  const g=ctx.createLinearGradient(-70*s,-30*s,70*s,30*s);g.addColorStop(0,lighten(bodyColor,20));g.addColorStop(.6,bodyColor);g.addColorStop(1,darken(bodyColor,20));
+  ctx.fillStyle=g;roundRect(ctx,-72*s,-42*s,145*s,84*s,36*s);ctx.fill();
+  // cockpit
+  ctx.fillStyle='rgba(91,222,210,.7)';roundRect(ctx,18*s,-30*s,43*s,48*s,18*s);ctx.fill();
+  // main mast
+  ctx.strokeStyle='#222';ctx.lineWidth=7*s;ctx.beginPath();ctx.moveTo(0,-42*s);ctx.lineTo(0,-82*s);ctx.stroke();
+  ctx.save();ctx.translate(0,-84*s);ctx.rotate(rotorPhase);ctx.strokeStyle=propColor;ctx.lineWidth=7*scale;ctx.beginPath();ctx.moveTo(-rotorR,0);ctx.lineTo(rotorR,0);ctx.stroke();ctx.restore();
+  // tail rotor
+  ctx.save();ctx.translate(-193*s,-15*s);ctx.rotate(rotorPhase*1.8);ctx.strokeStyle=propColor;ctx.lineWidth=4*scale;ctx.beginPath();ctx.moveTo(-24*scale,0);ctx.lineTo(24*scale,0);ctx.stroke();ctx.beginPath();ctx.moveTo(0,-24*scale);ctx.lineTo(0,24*scale);ctx.stroke();ctx.restore();
+  // skids
+  ctx.strokeStyle='#333';ctx.lineWidth=5*scale;ctx.beginPath();ctx.moveTo(-45*s,50*s);ctx.lineTo(48*s,50*s);ctx.stroke();ctx.beginPath();ctx.moveTo(-40*s,38*s);ctx.lineTo(-45*s,50*s);ctx.stroke();ctx.beginPath();ctx.moveTo(38*s,38*s);ctx.lineTo(48*s,50*s);ctx.stroke();
+  ctx.restore();
+  drawPayloadAndSensor(ctx,cx,cy+6*s,scale);
+  if(showName)drawNamePlate(ctx,cx,cy-118*scale,scale);
+}
+function drawNamePlate(ctx,cx,y,scale){
+  const name=($('#droneName')?.value||'UNNAMED DRONE').trim()||'UNNAMED DRONE';
+  ctx.fillStyle='rgba(255,255,255,.93)';roundRect(ctx,cx-100*scale,y,200*scale,38*scale,16*scale);ctx.fill();
+  ctx.fillStyle=bodyColor;ctx.font=`bold ${18*scale}px Tahoma`;ctx.textAlign='center';ctx.fillText(name,cx,y+25*scale)
+}
+
 function drawDroneTo(canvas,ctx,scale=1,angle=viewAngle,showName=false){
+  const dtype=selected.airframeType||'multirotor';
+  if(dtype==='fixedwing'){drawFixedWing(canvas,ctx,scale,angle,showName);return}
+  if(dtype==='vtol'){drawVTOL(canvas,ctx,scale,angle,showName);return}
+  if(dtype==='helicopter'){drawHelicopter(canvas,ctx,scale,angle,showName);return}
   const W=canvas.width,H=canvas.height;ctx.clearRect(0,0,W,H);
   const grad=ctx.createRadialGradient(W*.5,H*.45,20,W*.5,H*.45,W*.55);
   grad.addColorStop(0,'rgba(91,222,210,.14)');grad.addColorStop(1,'rgba(79,45,183,.02)');
@@ -965,6 +1172,7 @@ function renderResult(){
   $('#gradeRing').style.background=`conic-gradient(var(--teal) ${r.score*3.6}deg,#ffffff22 ${r.score*3.6}deg)`;
   $('#finalEvaluation').textContent=r.score>=85?`تصميم قوي جداً لمهمة ${m.name}. القرارات الهندسية متوازنة وتخدم متطلبات المهمة.`:r.score>=70?`التصميم قادر على تنفيذ المهمة، لكن توجد فرصة لتحسين بعض الخصائص.`:`التصميم قابل للتجربة، لكنه يحتاج تعديلات قبل اعتباره خياراً جيداً للمهمة.`;
   const specs=[
+    ['نوع الدرون',getOpt('airframeType',selected.airframeType).name],
     ['الهيكل',getOpt('frame',selected.frame).name],
     ['المحركات',getOpt('motors',selected.motors).name],
     ['المراوح',getOpt('props',selected.props).name],
@@ -1003,7 +1211,7 @@ $('#backToLab').onclick=()=>{showScreen('labScreen');setProgress(1)};
 $('#finalizeBtn').onclick=()=>{beep(true);renderResult()};
 $('#redesignBtn').onclick=()=>{showScreen('labScreen');setProgress(1)};
 $('#newMissionBtn').onclick=()=>{
-  missionId=null;selected={frame:null,motors:null,motorType:null,props:null,battery:null,controller:null,sensor:null,module:null,safety:null};
+  missionId=null;selected={airframeType:null,frame:null,motors:null,motorType:null,props:null,battery:null,controller:null,sensor:null,module:null,safety:null};
   testPassed=false;renderMissionCards();$('#missionNext').disabled=true;showScreen('missionScreen')
 };
 $('#homeBtn').onclick=()=>showScreen('startScreen');
