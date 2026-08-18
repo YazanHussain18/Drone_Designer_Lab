@@ -1,24 +1,61 @@
-# Drone Designer Lab v4 — 3D Drag & Drop
+# مختبر تصميم الدرون — Drone Designer Lab
 
-Designed for ages 7–9.
+تجربة تعليمية تفاعلية للأطفال (7–10 سنوات) لتعلّم **عملية تصميم الدرون** من خلال بناء نموذج 3D خطوة بخطوة ثم اختباره في مهمة.
 
-## Main changes
-- Component choices are primarily visual images rather than text lists.
-- Students drag an image onto the 3D drone to choose it.
-- Clicking/tapping an image is also supported.
-- True Three.js 3D model.
-- Drag the 3D model to rotate it.
-- Mouse wheel / trackpad zoom.
-- Optional automatic rotation.
-- Multirotor, Fixed Wing, VTOL and Helicopter are visually different 3D aircraft.
-- Motor count, propeller size, battery, camera, mission equipment and safety equipment visibly change the model.
-- Compatibility is NOT shown while building.
-- Mission compatibility is revealed only at the end as 1–5 stars.
+## ماذا يفعل الطالب؟
 
-## GitHub Pages
-Upload:
-- index.html
-- .nojekyll
-- README.md
+1. يختار نوع الدرون: Multirotor / Fixed Wing / VTOL / Helicopter.
+2. يختار الهيكل المناسب.
+3. يختار نظام المحركات — واللعبة تمنع التركيبات غير المتوافقة مع الهيكل.
+4. يختار نوع المراوح.
+5. يختار البطارية ويرى أثر الوزن/وقت الطيران.
+6. يختار الكاميرا.
+7. يلوّن الدرون: اللون الرئيسي + الثانوي + لون المراوح.
+8. يسمّي الدرون ويكتب اسم المصمم.
+9. يختار مهمة: تصوير / توصيل / إنقاذ / استكشاف.
+10. يشاهد الدرون وهو ينفّذ المهمة ويحصل على نتيجة مرتبطة باختياراته.
+11. تظهر بطاقة مصمم الدرون النهائية ويمكن طباعتها.
 
-The Three.js renderer loads from esm.sh, so the activity needs internet access when first loaded.
+## التشغيل محليًا
+
+لأن المشروع يستخدم JavaScript Modules، شغّله من خادم محلي بدل فتح `index.html` مباشرة.
+
+### Python
+
+```bash
+python -m http.server 8000
+```
+
+ثم افتح:
+
+```text
+http://localhost:8000
+```
+
+## النشر على GitHub Pages
+
+1. أنشئ Repository جديدًا في GitHub.
+2. ارفع محتويات هذا المجلد إلى **جذر الـ repository**:
+   - `index.html`
+   - `styles.css`
+   - `app.js`
+   - `.nojekyll`
+3. افتح **Settings → Pages**.
+4. اختر **Deploy from a branch**.
+5. اختر الفرع `main` والمجلد `/ (root)` ثم Save.
+6. بعد اكتمال النشر سيظهر رابط GitHub Pages في صفحة Pages.
+
+## ملاحظة الإنترنت
+
+البرنامج نفسه لا يحتاج build tools أو backend، لكنه يحمّل مكتبة **Three.js** من jsDelivr عند فتح الصفحة. لذلك يلزم اتصال بالإنترنت لتحميل محرك 3D. بعد نشره على GitHub Pages سيعمل مباشرة في المتصفحات الحديثة.
+
+## الملفات
+
+- `index.html` — بنية التطبيق والواجهة.
+- `styles.css` — تصميم Tuwaiq-inspired متجاوب للكمبيوتر والتابلت.
+- `app.js` — منطق التصميم، النماذج ثلاثية الأبعاد، الأداء، والمهمات.
+- `.nojekyll` — يمنع Jekyll من تعديل بنية ملفات GitHub Pages.
+
+## فلسفة التعليم
+
+لا يوجد تصميم واحد مثالي لكل شيء. نفس الدرون قد يكون ممتازًا للتصوير لكنه أقل ملاءمة للتوصيل. الهدف أن يرى الطالب أثر قرارات التصميم بصريًا بدل حفظ إجابات صحيحة وخاطئة.
